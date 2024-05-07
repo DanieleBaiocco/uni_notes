@@ -193,11 +193,12 @@ Voglio minimizzare la differenza tra il punto computato da Harris Corner Detecto
 ![[dfasfd.png]]
 Si utilizzano algoritmi iterativi per ottimizzare sta cosa. Solitamente il **residuo** (il MIN trovato) di questa loss diciamo e' usato come parametro per vedere quanto e' buona la calibration. Se alla fine lo ho alto ho fatto una brutta calibrazione.
 
-# COMPENSATE LENS DISTORTION
+# COSE CHE POSSO FARE UNA VOLTA CHE HO UNA CAMERA CALIBRATA
+## COMPENSATE LENS DISTORTION
 La prima cosa che faccio dopo aver calibrato la mia camera, e' **levare la distortion** dalle immagini. Questa cosa si fa perche' e' molto piu' facile lavorare con un modello **lineare** che non abbia al suo interno la **non-linearita'** che la distorzioni data dalle lenti introduce.
 L'operazione che leva la distortion e' chiamata  **warping**.
 Per ora ho gia' visto il **filtering**, quando faccio una convoluzione con un kernel su di una immagine. E' chiamata cosi' perche' lavoro sui valori rgb dell'immagine per cambiarli, senza muoverli in altri posti: la posizione spaziale dei pixels rimane la stessa, sto **solo cambiando l'intensita'** dei pixels.
-# WARPING
+### WARPING
 Nel **warping** **MUOVO** i pixels, quindi ne cambio la loro collocazione spaziale (non ne sto cambiando i valori di intensita').
 
 Il **warping** permette di computare una nuova immagine $I'$ data $I$.
@@ -212,7 +213,96 @@ Solitamente si fa **forward mapping**, ovvero
 Il problema e' che:
 1. Piu' *pixels* potrebbero finire, a causa del **rounding**, nello **stesso** pixel (fenomeno chiamato **fold**)
 2. Qualche *pixels* nell'immagine di destinazione potrebbero anche **non** essere messi (fenomeno chiamato **holds**). Certi pixels non sono mai il target di un input pixels.
-Allora provo a fare **backward mapping**: si inizia da $I'$, per ogni pixel della target image (intero ovviamente), dove va questo pixel nell'immagine originale? Quindi invece di usare $w$ si utilizza $w^{-1}$. Ora ho pero' lo stesso problema di prima. AD ogni modo ora il problema e' nella **source**. Nella source viene utilizzata una strategia che puo' essere *o truncation, o Nearest Neighbour, o interpolation*(per vedere l'intensita', si prende quella che e' una interpolation tra i 4 pixels vicini a quello in cui finisco oltre a quello in cui finisco immagino). Un risultato da questa strategia verra' fuori e assegno quel risultato al pixel nell'$I'$. Pero' in sto modo ho PER OGNI PIXEL della target un valore ritornato (non ho piu' il problema degli HOLES).
+Allora provo a fare **backward mapping**: si inizia da $I'$, per ogni pixel della target image (intero ovviamente), dove va questo pixel nell'immagine originale? Quindi invece di usare $w$ si utilizza $w^{-1}$. Ora ho pero' lo stesso problema di prima, ovvero che ho *NON INTEGER COORDINATES* come risultato della trasformazione. AD ogni modo ora il problema e' nella **source**. ![[cv2314.png]]
+Come si puo' vedere dall'immagine il pixel in cui si arriva non e' intero. Per renderlo intero si fa  *o truncation, o Nearest Neighbour, o interpolation*(ad esempio nell'immagine si finisce su un pixel che e' blu, ma comunuqe il punto e' finito a margine di questo pixel blu, a confine con 3 pixels rossi. NON voglio che il valore ritornato sia  BLU, ma voglio quindi che il valore di intensita' ritornato sia una *interpolation* tra questi pixels). Un risultato da questa strategia verra' fuori e assegno quel risultato al pixel nell'$I'$. Pero' in sto modo ho PER OGNI PIXEL della target un valore ritornato (non ho piu' il problema degli HOLES). Capisci che prendendo singolarmente ogni pixel nella target image HO A OGNI PIXEL ASSEGNATO UNO E UN SOLO VALORE DI INTENSITA'. 
 
-## Bilinear interpolation
-MOLTO SEMPLICE ne parla prossima volta
+### Bilinear interpolation
+Qui ho $u,v$ che e' dove finisco con il *warping inverso*. E poi ho dei punti $I_1,I_2,I_3,I_4$ che rappresentano i valori di **intensita'** dei pixels agli angoli, e identificabili con le coordinate $(u_1,v_1), (u_2, v_2), (u_3, v_3), (u_4,v_4)$.
+Quindi questi $I$ sono i nearest neighborhoods del punto $u,v$ in cui finisco.
+![[cvinterpolation.png]]
+Calcolo $\Delta u = u - u_1$ e $\Delta v = v - v_1$.
+Voglio fare *interpolazione lineare* per determinare il valore di intensita' di $u,v$, Vorrei che il risultato fosse una *interpolazione lineare* tra i valori di intensita' $I_a, I_b$, che ancora non so come calcolare.
+![[iaib.png]]
+Per calcolarli **faccio anche per loro una linear interpolation**, per $I_a$, faccio linear interpolation tra $I_1$ e $I_2$, per $I_b$ tra $I_3$ e $I_4$. Sotto e' presente questa linear interpolation per $I_a$:
+![[dfa.png]]
+La formula da derivare per fare questa linear interpolation e' la seguente:
+$$\frac{I_a - I_1}{\Delta u} = I_2  - I_1$$
+**Nota** e' stato omesso il diviso 1 nella parte di dx della formula. E' letteralmente una proporzione. Da questo calcolo $I_a$: $$I_a = (I_2 - I_1)\Delta u + I_1$$
+A livello di interpretazione, piu' sono vicino a $I_2$ (indicato da un $\Delta u$ grande), piu' la parte di destra $(I_2 - I_1)$ contribuira'. Nota che se $\Delta u$ e' 1  (al limite), allora il risultato e' $I_2-I_1+I_1=I_2$.
+Ottenute queste due posso calcolare 
+$$I(\Delta u, \Delta v)= (I_b - I_a) \Delta v + I_a$$
+Alla fine la formula finale sara':
+![[bilinear_interpolation.png]]
+Se la riscrivo meglio diventa:
+![[bilinear_interpolation2.png]]
+Ho quindi una **combinazione lineare** tra $I_1, I_2, I_3, I_4$. Pensa alle varie posizioni in cui $(\Delta u, \Delta v)$ puo' stare per capire come la contribuzione dei 4 pixels nell'intensita' finale cambia.
+Se uso per zoommare un warp con Nearest Neighborhood ho una roba pixxellata, nel caso della *bilinear interpolation* ho invece una roba piu' smoothed.
+![[bilinear_nn.png]]
+Ogni volta in cui warpo qualcosa in cui la ***transizione** deve essere preservata*, allora Nearest Neigborhood deve essere usata. Ad esempio se ho una *binary mask* della mia immagine (magari dopo un segmentation algorithm). Se voglio poi fare **warping**, per conservare il fatto che ci sono SOLO 1 E 0, allora NON POSSO FARE **bilinear interpolation**, ma in generale nessun tipo di interpolation, perche' cambierebbe i valori e NON sarebbero piu' O 1 O 0, ma anche valori in mezzo a 1 e 0.
+
+### UNDISTORT WARPING
+Ora finalmente posso parlare di come fare un warping per levare l'effetto delle lenti imparato dallo step della *calibration*. 
+Posso vedere le formule della distorzione delle lenti come un **warping**.
+Quindi quello che si fa e' la seguente cosa, usando **backward warping**:
+1. Per ogni pixel nell'immagine *ideale*, che e' quella che voglio creare, si fa backward warping, quindi andando a vedere dove $w^{-1}$ mi porta. Cio' che viene fatto e' la seguente cosa di base. ![[formula.png]]. Con $w^{-1}$ che e' 
+ ![[radial.png]]
+ Quello che viene fatto e' quindi:
+![[cvcvcvcvcvvccvcvcvcv.png]]
+1. Qui finiro' in un punto che NON ha coordinate intere e applichero' come visto prima una tecnica quale truncation, Nearest Neighborhood o bilinear interpolation
+
+
+In sto modo ottengo: 
+![[ottengo.png]]
+
+## FARE WARPING DELL'IMMAGINE SU UNA CAMERA VIRTUALE
+Posso ad esempio posizionare una nuova camera virtuale nello spazio e chiedermi come sarebbe l'immagine se fosse vista da quella camera.
+Questo qua sotto e' un esempio di warping dell'immagine a una camera che e' posizionata SOPRA, quindi con visuale dall'alto.
+![[cvsopra.png]]
+Cio' e' possibile utilizzando il fatto che **ogni due immagini di una scena piana (quindi che ha la coordinata z del WRF a 0)** sono legate da un'**omografia** che permette di passare da una all'altra.
+Nota che per far funzionare sta cosa c'e' bisogno che la lens distortion sia levata. 
+Questa immagine qua sotto spiega il tutto:
+Infatti ho che il WRF e' uguale per entrambe le Camera Reference Frames. Ho inoltre che la linea grigia rappresenta una scena PIANA, come magari puo' essere la strada. Il WRF e' messo in maniera tale che ogni punto espresso nel WRF ha 0 nella coordinata delle z (come ho fatto in calibration con i punti della scacchiera). Ho poi $I_1$ e $I_2$ che sono due image planes di due CRF $C_1$ e $C_2$. E' stimabile ovviamente un' omografia $H_1$ che permette di andare da $\tilde{M}_w$ a $\tilde{m}_1$. La stessa cosa con $H_2$. Posso quindi scrivere una equazione in funzione dell'altra e ottenere un modo per andare da $\tilde{m}_1$ a $\tilde{m}_2$ e viceversa. Quindi ho due **warpings** che mi fanno passare da una all'altra e viceversa, SENZA andare nel 3D. (ho una relazione tra 2D images).
+![[fad.png]]
+RICORDA SEMPRE CHE QUANDO VEDI IL TILDE E' PER INDICARE CHE SI STA PARLANDO DI HOMOGENEOUS COORDINATES.
+Questo **MAPPING** e' corretto SOLO PER PUNTI SUL PIANO, quindi SOLO PER PUNTI DELLA STRADA, non anche per punti piu' alti della strada (quelli con z diverso da 0). Infatti dalla foto di sopra si vede come tutto cio' che e' proprio a livello della strada e' ben approssimato, il resto (le macchine gli alberi) e' **molto distorto**. 
+
+*La domanda che mi chiedo pero' e': come ottengo $H_2$?* Di sicuro ottengo $H_1$ usando camera calibration. Per trovare $H_2$ , essendo il CRF della camera virtuale non calibrabile (visto che e' appunto virtuale), dovrei trovare dei punti salienti da matchare, delle corrispondenze. Poi risolvo usando l'errore algebrico e l'errore geometrico in maniera iterativa. Non chiarissimo eh. non che l'abbia spiegato proprio bene.
+
+## FARE WARPING DELL'IMMAGINE SU UNA ROTAZIONE RISPETTO ALL'OPTICAL CENTER
+Cio' e' possibile usando il fatto che **ogni due immagini che son prese da una camera ruotata rispetto al suo optical center sono legate da una omografia** (se la distorzione delle lenti e' stata rimossa ovviamente).
+
+Per vedere questa cosa guarda qua:
+![[cvrotation.png]]
+Ho una CRF particolare, che e' quella che siede perfettamente dove e' presente la WRF, quindi NON ho roto-translation di alcun tipo.
+Di conseguenza, la formula con cui un punto omogeneo nell'image plane $\tilde{m}_1$ e' espresso e':
+![[eh minimal.png]]
+Posso levare l'ultima coordinata omogenea 1 in quanto ho 0 nella parte della translation. Quindi posso direttamente lavorare con $M_w$.
+Se faccio poi una rotazione, ho che la formula nel nuovo CRF sara':
+![[nuovoroto.png]]
+Questo punto e' esprimibile senza cambiare gli intrinsic parameters ma soltando aggiungendo la rotazione compiuta agli extrinsic parameters. 
+Nota che anche qui non ho translation quindi ho 0 sull'ultima colonna, quindi posso lavorare con $M_w$. Ora e' possibile avere due warping, due omografie.
+![[alla_fine_ho 1.png]]
+Queste omografie sono valide **per ogni punto 3D**, non come prima, in cui andava bene SOLAMENTE per i punti che avevano coordinata z=0 nel WRF.
+Sta cosa e' molto utile nelle *self driving cars*.
+
+#### Caso d'uso
+Ho un caso d'uso in cui ho una immagine, in cui il WRF e' posizionato proprio dove e' presente il CRF.
+Ho anche delle linee parallele nel mondo reale (magari linee di una strada come in figura).
+![[das.png]]
+Devi sapere che il *pitch* e' di quanto e' ruotata la camera rispetto all'asse orizzontale.
+
+Assumo che il veicolo stia guidando in maniera *dritta* rispetto alle linee. 
+Ho che le linee della strada sono **parallele** all'asse delle z del mio WRF (cio' ha senso perche' immagina la z come la profondita' e se ci pensi e' vero, le linee della strada sono parallele).
+Di conseguenza queste linee hanno un orientamento esprimibile tramite le coordinate $[0, 0, 1]$. Il loro punto all'infinito e' di conseguenza $[0,0,1,0]$. 
+
+**Voglio trovare, dato questo setup, di quanto ammonta il pitch della foto di destra, voglio quindi stimare l'angolo secondo il quale la camera e' stata ruotata per ottenere poi la foto di destra**.
+Posso esprimere il punto all'infinito nel CRF ruotato aggiungendo agli extrinsinc parameters una R che indica una rotazione lungo l'asse delle x (quello orizzontale) **parametrizzata**. Questa e' cosi' descritta ![[Rpitch.png]]
+Di conseguenza il vanishing point e' calcolabile nel seguente modo:
+![[msegreto.png]]
+Ho che l'*unknown* e' $\beta$.
+Nota che il calcolo del vanishing point riguarda **solamente** la terza colonna di $R_{\text{pitch}}$.
+A questo punto posso proprio calcolare $r_3$, invertendo il risultato  e ottenendo
+![[r3.png]]
+Nota, qua visto che lavoro in *projective spaces* c'e' sempre un po' di ambiguita', quindi non posso fare direttamente $r_3 = A^{-1}m_{\infty}$. Essendo pero' $r_3$ parte di una rotation matrix che sappiamo essere ortonormale (so quindi che $r_3$ e' e deve essere uno *unit vector*) divido per la norma. A questo punto stimo $\beta$ come l'atan di sin e cos.
+A sto punto, ho R, di conseguenza posso computare (COME VISTO SOPRA), l'omografia che lega l'immagine senza pitch di sinistra con l'immagine col pitch di destra. 
+Basta infatti che calcolo l'omografia facendo $ARA^{-1}$.

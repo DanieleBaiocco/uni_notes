@@ -330,7 +330,7 @@ This is good, but it also has the effect of altering the distribution
 
 * For end-to-failure experiments, are samples follow their natural distribution
 * ...But censored data includes no end event, causing a skew
-Ho praticamente la distribuzione dei segnali (o 0 o 1) che e' diversa da quella che avrei avuto se non avessi avuto il Censoring. (Cioe' io metto 1 magari quando alla macchina mancano ancora molti steps di vita, solo perche' NON ho i dati per la sua rimanente vita causa CENSORING).
+Ho praticamente la distribuzione dei segnali (o 0 o 1) che e' diversa da quella che avrei avuto se non avessi avuto il Censoring. (Cioe' io metto 1 magari quando alla macchina mancano ancora molti steps di vita, solo perche' NON ho i dati per la sua rimanente vita causa CENSORING). (ps non e' questo il motivo, infatti NON metto 1 quando ho censoring lol, metto 0 piuttosto. E questo metter zero porta a molti 0 immagino, motivo per cui si fa importance sampling per abbassare il peso degli 0 e alzare quello degli 1).
 
 Faccio quindi **IMPORTANCE SAMPLING**.(non chiarissimo come faccia rivedilo)
 Traino e poi GUARDO ALLE MIE PREDIZIONI care:
