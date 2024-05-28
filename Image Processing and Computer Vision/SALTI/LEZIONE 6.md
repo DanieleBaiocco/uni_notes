@@ -1,0 +1,2 @@
+Il notebook deve essere piu' conciso  possibile per il SECONDO ASSIGNMENT RICORDALO.
+QUANDO FAI HYPERPARAM TUNING SULLA SECONDA PARTE DELL'ASSIGNMENT VUOLE CHE UTILIZZI I TRAINING HYPERPARAMS (quindi solo il LR, la bacth_size, ecc...)

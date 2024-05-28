@@ -1,4 +1,4 @@
-Ricordi tutto quello detto sulla *pinhole camera?* Beh in verita' in pratica tutto il discorso della *perspective projection* da 3D a 2D, del fatto che le coordinate $(u,v)$ sono delle versioni scalate di rispettivamente $x$ e $y$ di una quantita' $z$, che e' la coordinata della profondita' nel 3D reference system.
+ Ricordi tutto quello detto sulla *pinhole camera?* Beh in verita' in pratica tutto il discorso della *perspective projection* da 3D a 2D, del fatto che le coordinate $(u,v)$ sono delle versioni scalate di rispettivamente $x$ e $y$ di una quantita' $z$, che e' la coordinata della profondita' nel 3D reference system.
 ![[fgfgf.png]]
 Ho molte cose stravolte, infatti devo avere che:
 1. solitamente si usa un *World Reference Frame* per i punti in 3D che e' diverso dal *camera reference frame* del pinhole camera model per i punti 3D.
@@ -96,7 +96,7 @@ Questa cosa che $\tilde{m}$ non e' un valido euclidian point nel piano in $R^2$ 
 Qui si ha che come si puo' vedere $\tilde{m}_\infty$ non interseca il piano in cui e' presente $m_0$, in quanto e' un vettore che giace nel piano con k = 0. E sto $\tilde{m}_\infty$ mi permette di rappresentare **punti all'infinito**. E' utile perche' una linea infinita nell'euclidian space viene mappata in un vettore in cui vengono preservate $a \text{ e }b$, che rappresentano la $DIREZIONE$ della linea. Vedo che questo vettore rappresenta un punto all'infinito in quanto ha 0 nella terza coordinata. **NOTA** che piu' linee parallele nell'euclidian space con diversi $m_0$ verranno mappate allo stesso vettore di $P^2$.
 
 Faccio tutto questo perche' cosi posso:
-1. prendere linee parallele nel mondo reale
+1. prendere linee parallele nel mondo reale`
 2. computare il loro punto all'infinito
 3. da questi, computare il vanishing point nella mia foto 2D
 DI CONSEGUENZA voglio estendere tutto cio' che ho detto sui punti all'infinito a una linea 3D.
