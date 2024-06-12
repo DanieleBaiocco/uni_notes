@@ -9,3 +9,7 @@ In pratica basta che io legga/studia/riassuma  la parte finale di AI and Data Pr
 Devo adesso aspettare che esca la lezione del Modulo 2 di lunedi 22/04/2024. 
 Per il resto, posso evitare le lezioni ammorbanti del modulo 3 e **seguire sulle slides** fino a dove e' arrivata la professoressa.
 Per quanto riguarda la lezione del Prof. del modulo 1, posso dichiararla conclusa e vista. 
+
+
+
+

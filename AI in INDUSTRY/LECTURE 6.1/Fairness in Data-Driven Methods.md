@@ -213,7 +213,7 @@ $$
 ...Meaning that we'll have _no satisfaction guarantee on unseen examples_ (QUINDI STO CONSTRAIN VALE per il TRAIN ma non e' detto che valga anche nel TEST. Quindi NON e' detto che non avro' DISCRIMINATION nel test set)
 * This is suboptimal, but doing better is very difficult
 * ...Since our constraint is defined (conceptually) _on the whole distribution_
-**We'll trust the model to generalize well enough**
+**We'll trust the model to g eneralize well enough**
 
 ### How to account for the constraint at training time?
 There's more then one method: we'll see the most famous one in ML
