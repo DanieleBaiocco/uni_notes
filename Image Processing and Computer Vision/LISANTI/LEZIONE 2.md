@@ -3,7 +3,7 @@ Nell'image plane c'e' un *planar sensor* che converte la luce in ogni punto in e
 **Come faccio A DISCRETIZZARE UNA IMMAGINE CONTINUA?**
 CI sono 2 STEPS: 
 1. **SAMPLING**: c'e' uno spatial sampling  dai FOTORECEPTORS che mappano i raggi in ELETTRICAL POINTS a una grid di dimension N x M. Praticamente in questo step si definisce la grid N x M, **SPECIFICANDO** il numero di PIXELS che voglio per la mia immagine.
-2. **QUANTIZATION**: Questi devono POI essere convertiti in un valore che sia comprensibile dal PC. C'e' un QUANTIZATION STEP, in cui il valore elettrico viene mappato in un numero che ne rappresenta L'INTENSITA', sotto forma di *gray levels*. Devo in QUANTIZATION scegliere quanti VALORI DI INTENSITA' voglio rappresentare. Questo dipende da QUANTI BITS voglio usare.
+2. **QUANTIZATION**: Questi devono POI essere convertiti in un valore che sia comprensibile dal PC. C'e' un QUANTIZATION STEP, in cui il valore                                                                                                                                                                                                                                                                    elettrico viene mappato in un numero che ne rappresenta L'INTENSITA', sotto forma di *gray levels*. Devo in QUANTIZATION scegliere quanti VALORI DI INTENSITA' voglio rappresentare. Questo dipende da QUANTI BITS voglio usare.
    Se ho _m_ come numero di bits scelti per rappresentare un pixel allora avro' $l = 2^m$ possibili valori discreti da associare a un pixel.
 **NOTA** il numero totale di bits che servono per immagazzinare tutta l'informazione di un'immagine e' $B = N * M * m$ 
 Per avere un'immagine colorata, ho bisogno di 3 channels. Per ogni channel avro' una matrice di pixels. 

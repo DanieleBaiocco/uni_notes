@@ -159,7 +159,7 @@ Lo stesso per $\gamma$, $\beta$. Quindi le statistiche non vengono computate sol
 Nel primo conv layer, ho come risultato 6 feature maps con dimensioni 28x28.
 So pure che il kernel aveva dimensione 5x5. Quindi quanto era la stride? e il padding? e gli input channels?
 il kernel era di  dimensione 6 x 1 x 5 x 5 (perche' 6 sono le feature maps prodotte, 1 e' la dimensione dell'input channel perche' le immagini in input sono grayscale images)
-La stride e' 1 e il padding pure perche' secondo la formula ho $H_{\text{out}}= \lfloor\frac{H_{\text{in}} - H_{\text{k}} + 2P}{S}\rfloor + 1$ , con il termine della frazione arrotondato per difetto.
+La stride e' 1 e il padding a 0 perche' secondo la formula ho $H_{\text{out}}= \lfloor\frac{H_{\text{in}} - H_{\text{k}} + 2P}{S}\rfloor + 1$ , con il termine della frazione arrotondato per difetto.
 
 Subsampling nell'immagine e' *avg pooling*.
 ![[lenet5specifics.png]]
@@ -201,7 +201,7 @@ Nota che quando poi sto nei fullyconnected layers, io devo imparare un sacco di 
 Di fatti ho che fc6 ha in output 4096 unita', prima ne avevo 9216, quindi dovro' imparare una matrice W con 4096 righe e 9216 colonne a cui sommare 4096 bias terms.
 ![[par.png]]
 Nota il numero di parametri COME E' GRANDISSIMO rispetto alle convoluzioni.
-![[dfa.png]]
+![[dfasdd.png]]
 ORA ANALIZZO I RISULTATI:
 ![[breakdown.png]]
 

@@ -1,4 +1,4 @@
-# Differenza tra COMPUTER VISION E IMAGE PROCESSING
+ # Differenza tra COMPUTER VISION E IMAGE PROCESSING
 1. **IMAGE PROCESSING** ha come obiettivo quello di migliorare la qualita' di un'immagine
 2. **COMPUTER VISION** ha come obiettivo quello di estrarre informazioni dall'immagine (classification, error detection, ecc...)
 Molto spesso prima si fa IMAGE PROCESSING, per migliorare l'immagine, e poi COMPUTER VISION.
@@ -40,7 +40,7 @@ e $$v = -y\frac{f}{z}$$**Come derivo queste equazioni?**
 Ho che i rettangoli che si formano UMC e CZM sono **similar**, quindi posso usare **triangle similarity** e da questo derivo le equazioni di sopra.
 C'e' un **trick** per fare in modo che le immagini NON risultino **flippate**, ovvero assumere l'image plane davanti al focal plane. Questo pero' necessita che si aggiunga un MENO per il calcolo di _u_ e _v_.
 $$u = x\frac{f}{z}$$
- $$v = -y\frac{f}{z}$$
+ $$v = y\frac{f}{z}$$
  Se guardo _u_ nella formula, ho che x e' **scalato** di una quantita' $\frac{f}{z}$. 
  1. Se _z_ aumenta di conseguenza la risultante _u_ diminuira', il che significa che il PUNTO verra' mappato nell'image plane con una coordinata _u_ piu' piccola. 
  2. Se aumento la _focal length_ **f** , allora ho che la _u_ risultante sara' piu' grande, di conseguenza l'oggetto apparira' piu' grande nella risultante immagine. Con **f** piccolo ho invece un campo visivo molto piu' grande, di conseguenza coordinate nell'image plane molto piu' piccole (e' come se allontanassi cio' che vedo, prendendo una piu' ampia fetta di realta').
@@ -77,7 +77,7 @@ Per quanto riguarda $x_L$ e $x_R$ sono diversi, perche' le camere sono traslate 
 ![[CV6.png]]
 So dall'equazione formulata prima  che $v_L$ e $v_R$ saranno le stesse , in quanto sono entrambe legate a _y_, che e' uguale in entrambi i casi (ovviamente anche _f_ e _z_ sono uguali). Mentre $u_L$ e $u_R$ sono DIVERSE. 
 Ho che la loro differenza la chiamo **disparity** _d_.
-La formula e' $d = b \frac{f}{z}$, e da questa posso derivare la formula $z = b\frac{f}{d}$. Di questa formula so tutto, conosco _b_ in quanto posso calcolare $u_L$ e $u_R$ dagli _x_, conosco _f_ per come ho costruito le due camere, e conosco _d_ perche' conosco la distanza tra le due camere.
+La formula e' $d = b \frac{f}{z}$, e da questa posso derivare la formula $z = b\frac{f}{d}$. Di questa formula so quasi tutto. Conosco _f_ per come ho costruito le due camere, e conosco _d_ perche' conosco la distanza tra le due camere. L'unica cosa che non conosco e' b perche' NON so di preciso quali sono gli $u_L$ e $u_R$.
 Questa quantita' mi serve per capire la DEPTH in 3D.
  L'unica cosa che mi manca e' un ALGORITMO che mi dica che $p_L$ e $p_R$ SIANO gli stessi, cioe' **che appartengano allo stesso punto osservato nel mondo reale**.
 
@@ -96,6 +96,9 @@ La trasformazione tra le due camera nelle posizioni deve essere una **ROTOTRANSL
 Questo pero' e' pesante da fare, perche' ogni volta ho delle *epipolar lines* che non sono mai orizzontali, ma sempre di diversa pendenza, come nel caso qua sotto.![[CV8.png]]
 ## RECTIFICATION
 Applico alle immagini una trasformazione chiamata **RECTIFICATION** in modo tale che le due immagini siano ALLIGNED nell'asse x e POSSO ORA CERCARE SOLO TRAMITE PARALEL LINES, aka le epipolar lines sono SEMPRE E SOLO parallele adesso.
+
+• Warp the images as if they were acquired through a standard geometry (horizontal and collinear conjugate epipolar lines) 
+• Compute and apply to both images a transformation (i.e. homography) known as rectification
 ![[CV9.png]]
 ## STEREO CORRESPONDENCE
 ![[CV10.png]]
@@ -136,7 +139,7 @@ E' un modello matematico che spiega le lenti. Questo e' mostrato in figura qui s
 **NOTA** qua _f_ e' la focal length delle **LENTI**, mentre v e' la _focal length_ dell'image plane. _f_ e' fisso e e' LEGATO alla lente. L'unica cosa che posso variare sono _u_ e _v_.
 **NOTA** Ho che i raggi paralleli all'optical axis sono riflessi per passare attraverso F, mentre quelli che passano attraverso la pinhole C non sono riflessi e si comportano normalmente.
 
-Se fisso la distanza dell'image plane dalla lente aka la _focal(che sarebbe _v_), ho che posso calcolarmi la distanza a cui i punti di scena risulteranno A FUOCO, quindi posso calcolarmi _u_ praticamente.
+Se fisso la distanza dell'image plane dalla lente aka la _focal(che sarebbe v_), ho che posso calcolarmi la distanza a cui i punti di scena risulteranno A FUOCO, quindi posso calcolarmi _u_ praticamente.
 **NOTA** esistera' solo un **PIANO** nel 3D che sara' a FUOCO nell'immagine.![[CV12.png]]
 Se fisso invece la distanza degli oggetti di scena, devo mettere l'image plane a una distanza pari a ![[CV13.png]]
 per avere quei punti ON FOCUS.
@@ -151,9 +154,13 @@ Negli ultimi due casi ho blur chiaramente.
 ## Diaphragm
 Ad ogni modo finche questi *Circles of confusion* sono piu' piccoli della grandezza dei **fotosensori**, l'immagine sembrera' comunque in FOCUS. 
 Se il BLUR CIRCLE e' PICCOLO ABBASTANZA da essere concentrato dallo STESSO FOTORECEPTOR che registra il valore del pixel nella camera allora NON VEDRO' BLUR in quanto **otterro' comunque un single value per quel pixel.**
+IMPORTANTE:
+The range of distances across which the image appears on focus - due to blur circles being small enough - determines the DOF (Depth of Field) of the imaging apparatus
+Per questo dico che il pinhole camera model ha un DOF infinito, perche' il range delle distanze per cui ho i pixels a fuoco e' INFINITO (posso stare infinitamente lontano/vicino e avere comunque tutti i pixels a fuoco).
 Se pero' il  *Circle of confusion*  e' TROPPO GRANDE, allora nell'immagine avro' BLUR.
 
 C'e' comunque un MODO per regolare la quantita' di luce da prendere dalla scena e da far arrivare alla lente. Riducendo l'apertura, Con meno luce avro' un **piu' piccolo** BLUR CIRCLE. Aumentando l'apertura, Con piu' luce avro' un **piu grande** BLUR CIRCLE.
+
 
 # Focusing Mechanism
 Le camere piu' professionali, c'e' un mecanismo di FOCUSING.

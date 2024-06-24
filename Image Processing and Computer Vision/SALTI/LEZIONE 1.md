@@ -61,7 +61,7 @@ Di conseguenza si ha che $RR^T = R^TR = I$, perche' quando questi sono uguali, i
 In pratica **l'inversa e' la trasposta** quindi in questo caso.
 Posso ora secondo questo setting sapere le COORDINATE nel WRF di $C_M$ (dell'Optical center C in WRF), quindi del punto  $C_M =[0,0,0]$.
 Voglio scoprire $C_W$ dato $C_M$
-$$ C_M = RC_W+t <=> 0 = RC_W+t => RC_W =-R^Tt$$
+$$ C_M = RC_W+t <=> 0 = RC_W+t => C_W =-R^Tt$$
 Di quanti **extrinsic parameters** ho bisogno adesso?
 Mi verrebbe da dire 12 perche' e' 9 di R e 3 di t, ma R ha solo 3 **parametri indipendenti** che corrispondono agli angoli di rotazione intorno agli assi del Reference Frame, uno per ogni coordinata $x,y,z$. Quindi in tutto ne ho 6 (3+3).
 
@@ -87,7 +87,7 @@ $m = m_0 + \lambda d$, con $m_0$ che e' il punto in cui la linea  inizia, $d$ e'
 Praticamente e' variando $\lambda$ che ottengo tutti i punti della linea che passa per $m_0$ e segue la direzione $d$. Quindi ho
 $$m = m_0 + \lambda d = \begin{bmatrix}u_{0} \\ v_{0} \end{bmatrix} + \lambda \begin{bmatrix} a \\ b \end{bmatrix} = \begin{bmatrix}u_0+\lambda a\\ v_0+\lambda b\end{bmatrix}$$
 Ora vedo questa linea generica $m$ in $P^2$:
-$$\tilde{m}=\begin{bmatrix}m\\1\end{bmatrix}=\begin{bmatrix}u_0+\lambda a\\ v_0+\lambda b\\1\end{bmatrix} =\begin{bmatrix} \frac{u_0}{\lambda}+ a \\ \frac{v_0}{\lambda}+ b\\ \frac{1}{\lambda}\end{bmatrix}$$
+$$\tilde{m}=\begin{bmatrix}m\\1\end{bmatrix}=\begin{bmatrix}u_0+\lambda a\\ v_0+\lambda b\\1\end{bmatrix} \equiv \begin{bmatrix} \frac{u_0}{\lambda}+ a \\ \frac{v_0}{\lambda}+ b\\ \frac{1}{\lambda}\end{bmatrix}$$
 Ottengo ORA un punto all'*infinity* , che e' quello che volevo trovare, quando $\lambda$ tende all'infinito. 
 Ho, in questo setting, che $\tilde{m}_\infty = \text{lim}_{\lambda -> \infty} \tilde{m} = \begin{bmatrix} a\\ b\\ 0 \end{bmatrix}$  . Questo vettore e' un punto valido nel mio *projection space*. Non e' un euclidian point, questo perche' secondo quanto detto prima non posso passare da un punto in $R^2$ a un punto in $P^2$ che sia tale a  $\begin{bmatrix} a\\ b\\ 0 \end{bmatrix}$. Questo perche' non si puo' ammettere $h\neq 0$ come detto nella formula per trovare tutti i vettori equivalenti da $R^2$:
 $$\hat{m} =[u,v,1] \equiv [2u,2v,2] \equiv[ku,kv,k]\forall h\neq 0$$

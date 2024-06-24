@@ -1,6 +1,6 @@
  ![[Pasted image 20240607191038.png]]
  L'asse delle x indica la model capacity. Non si riferisce alla training history attenzione. 
- Indica quanta capacita' ha in termini di numero di neuroni. 
+ Indica quanta capacita' ha in termini di numero di neuroni (e non solo). 
  Solitamente si ha che piu' il modello e' potente mi vien da dire, allora piu' e' probabile che si OVERFITTI. Questo perche' il modello e' cosi' potente che impara anche **spurious correlations** del training data tra i dati e le labels, che NON sono presenti nel test data insomma.
  Metti che nel training set ho che i gatti sono visti da una posizione LATERALE, un modello con grande capacita' potrebbe imparare che c'e' una correlazione tra la posizione del soggetto (LATERALE in sto caso) e la classificazione di quell'oggetto in gatto. Questa e' una *spurious correlation*. Generalizzera' male perche' se poi vede gatti visti di fronte allora non sara' in grado di detectarli perche' non rispettano la correlazione imparata.
 
@@ -51,7 +51,7 @@ A sto punto usando LR schedule, ho che appena c'e' una situazione di STUCK, ques
 OVVIAMENTE POSSIAMO VEDERE COME E' LA LOSS LANDSCAPE anche per il test set, e e' stato dimostrato PIU' VOLTE che c'e' uno **SHIFT** tra train e test set. Quindi il valore ottimale per il train set NON e' lo stesso per il test set. Si ha quindi uno SHIFT che in figura e' verso DX ma in pratica e' composto da distorzioni della loss landscape. 
 Solitamente l'optimal value della loss del test set e' VICINO al valore ottimale della loss del training set MA NON ESATTAMENTE LI'. HO QUINDI CHE MINIMA LARGHI, come quello che viene trovato da una lr schedule SONO MOLTO PIU' ROBUSTI RISPETTO A MINIMA STRETTI (con conche strette), perche' nei minima stretti, un piccolo shift della loss landscape risulta in un GRANDE ERRORE DI GENERALIZZAZIONE:
 ![[Pasted image 20240608002557.png]]
-Per MINIMA LARGHI INVECE non ho questa grossa discrepanza, anche se HO DEGLI SHIFTS, perche' **LA LOSS E' SIMILE NEI VALORI VICINI DEL PARAMETER SPACE**. Quindi se si ha uno shift ho un impatto MOLTO MENO DRAMMATICO. I valori dei parametri trovati comportano comunque una loss abbastanza bassa, perche' anche dopo uno shift quel valore della loss e' comunque all'interno della conca nella test loss landscape.
+ , perche' **LA LOSS E' SIMILE NEI VALORI VICINI DEL PARAMETER SPACE**. Quindi se si ha uno shift ho un impatto MOLTO MENO DRAMMATICO. I valori dei parametri trovati comportano comunque una loss abbastanza bassa, perche' anche dopo uno shift quel valore della loss e' comunque all'interno della conca nella test loss landscape.
 
 E' PER QUESTO CHE NON SI OVERFITTA.
 

@@ -95,3 +95,4 @@ Questo qua sotto e' l'algoritmo per il GHT invece:
 ![[boh.png]]con la tabella fatta nel seguente modo:
 
 ![[bohpt2.png]]
+Vedi su slides parte finale su generalized hough transform con sift keypoints.

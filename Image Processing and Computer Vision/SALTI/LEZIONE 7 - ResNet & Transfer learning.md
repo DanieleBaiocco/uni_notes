@@ -68,7 +68,9 @@ Hanno proposto un altro blocco in cui **il numero di steps di non linearita' aum
 Ho 3 convoluzioni, utilizza 2 convoluzioni con kernel a 1x1. In mezzo hanno una 3x3 convolution.
 Parto da 4C channels, riduco a C e poi alla fine con l'ultima 1x1 conv riporto il numero di channels a 4C. In sto modo posso fare la somma con la residual connection (con l'input che ha 4C channels). Per questo sto blocco e' chiamato bottleneck perche' si riduce la sua feature dimension per poi ripristinarla (a imbuto). Ha leggermente meno numero di parametri e di flops quindi TOP  e ho 3 non linearity steps invece di 2. Tutto di guadagnato. Ho anche che il numero di CHANNELS in input e' 4 volte piu' grande dell'altro residual block.
 
-**NOTA** importante: comunque la PRIMA convoluzione che e' 1x1 , per quello DETTO fino ad ora, seguendo quindi la regola vista fin'ora, c'e' una STRIDE A 2 che dimezza la spatial dimension (e non so perche' IN FIGURA cosi non e', ma dovrebbero RADDOPPIARE il numero di channels in output in verita')
+**NOTA** importante: comunque la PRIMA convoluzione che e' 1x1 , per quello DETTO fino ad ora, seguendo quindi la regola vista fin'ora, c'e' una STRIDE A 2 che dimezza la spatial dimension. Non e' presente in figura perche' la figura si riferisce a un BLOCCO dello stage DIVERSO DAL PRIMO, che si occupa di dimezzare la spatial e di raddoppiare le attivazioni. 
+
+Nel primo cio' che succede e' che nella PRIMA 1x1 conv si ha una stride a 2. Questo dimezza la spatial dimension. Non mi e' chiaro quando avviene l'aumento delle feature maps al DOPPIO (immagino in prossimita' del secondo 1x1 conv (invece di 4C magari ritornando 8C)). Parallelamente la residual connection fara' una 1x1 conv con stride a 2 e con output channels a 8C.
 
 Sto bottleneck block e' usato quando SI VA MOLTO IN BASSO CON IL NUMERO DI LIVELLI.
 
@@ -85,11 +87,13 @@ Nota che dai risultati,  piu' depth si stacca MENO E' LA GAIN (c'e' comunque una
 
 ## ResNet v2
 Nella ResNet con bottleneck block ho che come primo step ho una 1x1 conv con **stride 2**. Ma sta cosa non ha molto senso perche' una 1x1 conv con stride 2 usa SOLTANTO UN PIXEL ogni 4 attivazioni per computare l'output. Non ha molto senso. Quindi ho usato un sacco di FLOPS per computare le attivazioni e NE STO USANDO soltando 1/4.
+
 Quindi in ResNetv2 la **stride=2** e' messa soltanto nel 3x3 conv. Questo e' fatto nella ResNet-B
+NOTA CHE LA STRIDE A 2 PERO' RIMANE NEL 1X1 della residual connection, sta cosa e' un po' sussy.
 ![[Pasted image 20240604183602.png]]
 Nella ResNet-C si cambia lo stem layer che diventa questo 
 ![[Pasted image 20240604183646.png]]
-In ResNet-D viene cambiato il modo di matchare la residual connection con la dimensione in output del bottleneck block. Questo per lo stesso motivo che la 1x1 conv con stride 2 sulla skip connection evitava alcuni pixels. In sto modo ho che l'avg pool aggiusta la dimensione e la conv invece raddoppia il numero di channels
+In ResNet-D viene cambiato il modo di matchare la residual connection con la dimensione in output del bottleneck block. **Questo per lo stesso motivo che la 1x1 conv con stride 2 sulla skip connection evitava alcuni pixels. In sto modo ho che l'avg pool aggiusta la dimensione e la conv invece raddoppia il numero di channels**
 ![[Pasted image 20240607180138.png]]
 
 ![[Pasted image 20240607181018.png]]

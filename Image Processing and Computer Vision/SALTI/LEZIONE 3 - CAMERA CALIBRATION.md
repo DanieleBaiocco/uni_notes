@@ -114,7 +114,7 @@ Guarda questa figura per capire cosa sta succedendo
 ![[cvplanar.png]]
 dove faccio $m = \tilde{m} / k$ 
 Devo quindi **minimizzare** questo errore adesso, che e' il **reprojection error**, ovvero
-$$||m_j-H_j\text{ }w_j||$$
+$$||m_j-H_i\text{ }w_j||$$
 per  ogni punto predetto di un determinato corner. Questa minimizzazione dell'L2 norm e' chiamata minimizzazione dell'**errore GEOMETRICO** anche chiamato reprojection error per l'appunto.
 
 **DOMANDA**: perche' non l'abbiamo minimizzato da subito st'errore? Eh perche' rappresenta un errore **non lineare** (ha il quadrato) e quindi e' molto difficile da minimizzare senza una guess iniziale.
@@ -305,4 +305,4 @@ A questo punto posso proprio calcolare $r_3$, invertendo il risultato  e ottenen
 ![[r3.png]]
 Nota, qua visto che lavoro in *projective spaces* c'e' sempre un po' di ambiguita', quindi non posso fare direttamente $r_3 = A^{-1}m_{\infty}$. Essendo pero' $r_3$ parte di una rotation matrix che sappiamo essere ortonormale (so quindi che $r_3$ e' e deve essere uno *unit vector*) divido per la norma. A questo punto stimo $\beta$ come l'atan di sin e cos.
 A sto punto, ho R, di conseguenza posso computare (COME VISTO SOPRA), l'omografia che lega l'immagine senza pitch di sinistra con l'immagine col pitch di destra. 
-Basta infatti che calcolo l'omografia facendo $ARA^{-1}$.
+Basta infatti che calcolo l'omografia facendo $ARA^{-1}$.j
